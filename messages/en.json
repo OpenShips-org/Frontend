@@ -1,0 +1,10 @@
+{
+  "MapPage": {
+  },
+  "NavBar": {
+    "title": "OpenShips",
+    "link_map": "Map",
+    "link_vessels": "Vessels",
+    "link_ports": "Ports"
+  }
+}

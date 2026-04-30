@@ -1,0 +1,8 @@
+{
+  "HomePage": {
+    "title": "Hallo Welt!"
+  },
+  "VesselPage": {
+    "title": "Schiff {mmsi}"
+  }
+}
