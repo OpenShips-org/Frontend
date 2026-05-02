@@ -1,10 +1,9 @@
 import { getTranslations } from "next-intl/server"
-import { Metadata } from "next"
-import MainMap from "@/components/map/mainMap"
 import NavBar from "@/components/navbar/navbar"
+import { Metadata } from "next"
 
 export async function generateMetadata(): Promise<Metadata> {
-    const t = await getTranslations("MapPage")
+    const t = await getTranslations("PortsPage")
     return {
         title: t("window_title"),
         description: t("window_title"),
@@ -12,13 +11,13 @@ export async function generateMetadata(): Promise<Metadata> {
     }
 }
 
-export default function Page() {
+export default async function Page() {
+    const t = await getTranslations("PortsPage")
+
     return (
-        <div className="flex h-dvh w-full flex-col overflow-hidden">
+        <div className="h-screen w-screen overflow-hidden flex flex-col justify-start items-center">
             <NavBar />
-            <div className="min-h-0 flex-1 w-full">
-                <MainMap />
-            </div>
+            <h1 className="text-3xl font-bold p-4">{t("title")}</h1>
         </div>
     )
 }

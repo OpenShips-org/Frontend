@@ -1,8 +1,19 @@
 {
-  "HomePage": {
-    "title": "Hallo Welt!"
+  "MapPage": {
+    "window_title": "OpenShips - Karte"
+  },
+  "NavBar": {
+    "title": "OpenShips",
+    "link_map": "Karte",
+    "link_vessels": "Schiffe",
+    "link_ports": "Häfen"
   },
   "VesselPage": {
+    "window_title": "OpenShips - Schiffe",
     "title": "Schiff {mmsi}"
+  },
+  "PortsPage": {
+    "window_title": "OpenShips - Häfen",
+    "title": "Häfen"
   }
 }

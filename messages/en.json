@@ -1,10 +1,19 @@
 {
   "MapPage": {
+    "window_title": "OpenShips - Map"
   },
   "NavBar": {
     "title": "OpenShips",
     "link_map": "Map",
     "link_vessels": "Vessels",
     "link_ports": "Ports"
+  },
+  "VesselPage": {
+    "window_title": "OpenShips - Vessels",
+    "title": "Vessels"
+  },
+  "PortsPage": {
+    "window_title": "OpenShips - Ports",
+    "title": "Ports"
   }
 }
