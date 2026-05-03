@@ -15,5 +15,9 @@
   "PortsPage": {
     "window_title": "OpenShips - Ports",
     "title": "Ports"
+  },
+  "VesselDetailsPage": {
+    "window_title": "Vessel {name} ({mmsi}) Details",
+    "vessel_not_found": "Vessel not found"
   }
 }

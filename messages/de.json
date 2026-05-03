@@ -10,7 +10,7 @@
   },
   "VesselPage": {
     "window_title": "OpenShips - Schiffe",
-    "title": "Schiff {mmsi}"
+    "title": "Schiffe"
   },
   "PortsPage": {
     "window_title": "OpenShips - Häfen",

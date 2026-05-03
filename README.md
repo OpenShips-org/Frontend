@@ -1,1 +1,1 @@
-# OpenShips frontend
+# OpenShips frontend (Docker)

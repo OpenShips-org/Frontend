@@ -16,3 +16,12 @@ export type VesselPosition = {
 export type VesselPositionWithType = VesselPosition & {
     aisType: number | null
 }
+
+export type BaseStationPosition = {
+    mmsi: string
+    longitude: number | null
+    latitude: number | null
+    longRangeEnabled: boolean | null
+    communicationState: number | null
+    timestamp: string | null
+}

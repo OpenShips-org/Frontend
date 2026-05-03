@@ -1,12 +1,16 @@
-import { useMemo } from "react";
-import { IconLayer, TextLayer } from "@deck.gl/layers";
-import { VesselPositionWithType } from "@/types/aisTypes";
+import { useMemo } from "react"
+import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers"
+import { VesselPositionWithType, BaseStationPosition } from "@/types/aisTypes";
 import { GenerateVesselIcon } from "@/components/svgs/vesselIcon";
 import { svgToDataUrl } from "@/lib/iconUtils";
 import { PortPosition } from "@/types/portTypes";
 import { GeneratePortIcon } from "@/components/svgs/portIcon";
+import { Layer } from "@deck.gl/core";
+import { GenerateAisBasestationIcon } from "@/components/svgs/aisBasestations";
 
 const vesselIconCache = new Map<number, string>();
+
+const showVesselTimstamps = false;
 
 function getCachedVesselIcon(aisType: number) {
     const cachedIcon = vesselIconCache.get(aisType);
@@ -19,20 +23,46 @@ function getCachedVesselIcon(aisType: number) {
     return generatedIcon;
 }
 
-export function useVesselLayers(vessels: VesselPositionWithType[] | null) {
+export function useVesselLayers(
+    vessels: VesselPositionWithType[] | null,
+    hoveredVessel: VesselPositionWithType | null,
+    setHoveredVessel: (vessel: VesselPositionWithType | null) => void
+) {
     return useMemo(() => {
         if (!vessels) return [];
 
         const visibleVessels = vessels.filter(
             (vessel) => vessel.longitude != null && vessel.latitude != null
         );
-        
-        return [
+
+        const hoveredVesselData =
+            hoveredVessel &&
+            hoveredVessel.longitude != null &&
+            hoveredVessel.latitude != null
+                ? [hoveredVessel]
+                : []
+
+        const layers: Layer[] = [
+            new ScatterplotLayer({
+                id: "hovered-vessel-highlight",
+                data: hoveredVesselData,
+                pickable: false,
+                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getRadius: 20,
+                radiusUnits: "pixels",
+                getLineColor: [0, 140, 255, 180],
+                lineWidthMinPixels: 2,
+                stroked: true,
+                filled: false,
+            }),
             new IconLayer({
                 id: "vessels",
                 data: visibleVessels,
                 pickable: true,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
                 getIcon: (d) => ({
                     url: getCachedVesselIcon(d.aisType ?? 0),
                     width: 400,
@@ -40,43 +70,69 @@ export function useVesselLayers(vessels: VesselPositionWithType[] | null) {
                 }),
                 getAngle: (d) => {
                     if (d.heading == 511) return 0; // invalid heading, default to 0
-                    return d.heading - 225
+                    return d.heading - 225;
                 },
                 getSize: 30,
 
                 updateTriggers: {
-                    getIcon: vessels
+                    getIcon: vessels,
                 },
-            }),
+                onHover(pickingInfo) {
+                    setHoveredVessel(pickingInfo.object ?? null)
+                },
+                onClick(pickingInfo) {
+                    if (pickingInfo.object) {
+                        const mmsi = pickingInfo.object.mmsi;
+                        if (mmsi) {
+                            window.open(`/vessels/${mmsi}`, "_blank");
+                        }
+                    }
+                },
+            }),  
             new TextLayer({
                 id: "vessel-labels",
                 data: visibleVessels,
                 pickable: false,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
                 getText: (d) => d.vesselName || "",
                 getSize: 12,
                 getColor: [0, 0, 0],
-                getAngle: (d) => 0,
+                getAngle: () => 0,
                 getAlignmentBaseline: "bottom",
                 getPixelOffset: [0, -20],
             }),
+        ];
 
-            // DEBUG LAYER (timestamps with date)
-            new TextLayer({
-                id: "vessel-timestamps",
-                data: visibleVessels,
-                pickable: false,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
-                getText: (d) => d.timestamp ? new Date(d.timestamp).toLocaleDateString() + " " + new Date(d.timestamp).toLocaleTimeString() : "",
-                getSize: 10,
-                getColor: [255, 0, 0],
-                getAngle: (d) => 0,
-                getAlignmentBaseline: "bottom",
-                getPixelOffset: [0, -40],
-                visible: false, // set to true to enable timestamp labels
-            })
-        ]
-    }, [vessels]);
+        if (showVesselTimstamps) {
+            layers.push(
+                new TextLayer({
+                    id: "vessel-timestamps",
+                    data: visibleVessels,
+                    pickable: false,
+                    getPosition: (d) => [
+                        d.longitude as number,
+                        d.latitude as number,
+                    ],
+                    getText: (d) =>
+                        d.timestamp
+                            ? new Date(d.timestamp).toLocaleDateString() +
+                              " " +
+                              new Date(d.timestamp).toLocaleTimeString()
+                            : "",
+                    getSize: 10,
+                    getColor: [255, 0, 0],
+                    getAngle: 0,
+                    getAlignmentBaseline: "top",
+                    getPixelOffset: [0, 20],
+                })
+            );
+        }
+
+        return layers;
+    }, [vessels, hoveredVessel, setHoveredVessel]);
 }
 
 export function usePortLayer(ports: PortPosition[] | null) {
@@ -92,7 +148,10 @@ export function usePortLayer(ports: PortPosition[] | null) {
                 id: "ports",
                 data: visiblePorts,
                 pickable: true,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
                 getIcon: () => ({
                     url: svgToDataUrl(GeneratePortIcon()),
                     width: 400,
@@ -105,14 +164,46 @@ export function usePortLayer(ports: PortPosition[] | null) {
                 id: "port-labels",
                 data: visiblePorts,
                 pickable: false,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
                 getText: (d) => d.main_port_name || "",
                 getSize: 12,
                 getColor: [0, 0, 0],
-                getAngle: (d) => 0,
+                getAngle: () => 0,
                 getAlignmentBaseline: "bottom",
                 getPixelOffset: [0, -20],
-            })
-        ]
+            }),
+        ];
     }, [ports]);
+}
+
+export function useBasestationLayer(basestations: BaseStationPosition[] | null) {
+    return useMemo(() => {
+        if (!basestations) return [];
+
+        const visibleBasestations = basestations.filter(
+            (bs) => bs.longitude != null && bs.latitude != null
+        );
+
+        return [
+            new IconLayer({
+                id: "ais-basestations",
+                data: visibleBasestations,
+                pickable: false,
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
+                getIcon: (d) => ({
+                    url: svgToDataUrl(GenerateAisBasestationIcon(d.longRangeEnabled ?? false)),
+                    width: 400,
+                    height: 400,
+                }),
+                getSize: 30,
+                zoomScale: 0.5,
+            }),
+        ];
+    }, [basestations]);
 }

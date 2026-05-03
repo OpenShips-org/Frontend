@@ -1,57 +1,59 @@
-"use client"
+"use client";
 
-import { useRef, useEffect, useState } from "react"
-import { MapGLStyleSwitcher } from "map-gl-style-switcher/react-map-gl"
-import CoreMap, { type CoreMapRef } from "./coreMap"
-import { ScaleControl, NavigationControl } from "react-map-gl/maplibre"
-import { useVesselData, usePortData } from "@/hooks/useMapData"
-import { useVesselLayers, usePortLayer } from "@/hooks/useDecklglLayers"
-import { mapStyles } from "@/lib/mapStyles"
-import { useSettings } from "@/store/settings"
-import debounce from "lodash/debounce"
+import { useRef, useEffect, useState } from "react";
+import { MapGLStyleSwitcher } from "map-gl-style-switcher/react-map-gl";
+import CoreMap, { type CoreMapRef } from "./coreMap";
+import { ScaleControl, NavigationControl } from "react-map-gl/maplibre";
+import { useVesselData, usePortData, useBasestationData } from "@/hooks/useMapData";
+import { useVesselLayers, usePortLayer, useBasestationLayer } from "@/hooks/useDecklglLayers";
+import { mapStyles } from "@/lib/mapStyles";
+import { useSettings } from "@/store/settings";
+import debounce from "lodash/debounce";
+import type { VesselPositionWithType } from "@/types/aisTypes";
 
 export default function MainMap() {
-    const mapRef = useRef<CoreMapRef | null>(null)
-    const [isMapReady, setIsMapReady] = useState(false)
+    const mapRef = useRef<CoreMapRef | null>(null);
+    const [isMapReady, setIsMapReady] = useState(false);
 
     const [bounds, setBounds] = useState<{
-        minLat: number
-        maxLat: number
-        minLng: number
-        maxLng: number
-    } | null>(null)
+        minLat: number;
+        maxLat: number;
+        minLng: number;
+        maxLng: number;
+    } | null>(null);
+    const [zoom, setZoom] = useState(0);
 
-    // eslint-disable-next-line
-    const mapRefDebounced = useRef<any>(null)
+    const [hoveredVessel, setHoveredVessel] =
+        useState<VesselPositionWithType | null>(null);
 
     useEffect(() => {
-        if (!isMapReady || !mapRef.current) return
+        if (!isMapReady || !mapRef.current) return;
 
-        const map = mapRef.current
+        const map = mapRef.current;
 
         const updateBounds = debounce(() => {
-            const b = map.getBounds()
+            const b = map.getBounds();
 
             setBounds({
                 minLat: b.getSouth(),
                 maxLat: b.getNorth(),
                 minLng: b.getWest(),
                 maxLng: b.getEast(),
-            })
-        }, 250)
+            });
+            setZoom(map.getZoom());
+        }, 250);
 
-        map.on("moveend", updateBounds)
+        map.on("moveend", updateBounds);
 
-        updateBounds()
+        updateBounds();
 
         return () => {
-            map.off("moveend", updateBounds)
-            updateBounds.cancel()
-        }
-    }, [isMapReady])
+            map.off("moveend", updateBounds);
+            updateBounds.cancel();
+        };
+    }, [isMapReady]);
 
-    // eslint-disable-next-line
-    const { data: vesselData, isLoading: vesselsLoading, error: vesselsError } = useVesselData(
+    const { data: vesselData } = useVesselData(
         isMapReady && !!bounds,
         bounds ?? {
             minLat: 0,
@@ -60,42 +62,54 @@ export default function MainMap() {
             maxLng: 0,
         },
         []
-    )
+    );
 
-    const { data: portData, isLoading: portsLoading, error: portsError } = usePortData(
+    const { data: portData } = usePortData(
         isMapReady && !!bounds,
         bounds ?? {
             minLat: 0,
             maxLat: 0,
             minLng: 0,
             maxLng: 0,
-        }
-    )
+        },
+        zoom
+    );
 
-    const mapStyle = useSettings((state) => state.mapStyle)
-    const setMapStyle = useSettings((state) => state.setMapStyle)
-    const activeStyleId = mapStyles.find((s) => s.styleUrl === mapStyle)?.id
+    const { data: basestationData } = useBasestationData(
+        isMapReady && !!bounds,
+        bounds ?? {
+            minLat: 0,
+            maxLat: 0,
+            minLng: 0,
+            maxLng: 0,
+        },
+        zoom
+    );
+
+    const mapStyle = useSettings((state) => state.mapStyle);
+    const setMapStyle = useSettings((state) => state.setMapStyle);
+    const activeStyleId = mapStyles.find((s) => s.styleUrl === mapStyle)?.id;
 
     const handleStyleChange = (styleUrl: string) => {
-        const style = mapStyles.find((s) => s.styleUrl === styleUrl)
-        if (!style) return
+        const style = mapStyles.find((s) => s.styleUrl === styleUrl);
+        if (!style) return;
 
-        setMapStyle(styleUrl)
-    }
+        setMapStyle(styleUrl);
+    };
 
-    const viewState = useSettings((s) => s.viewState)
-    const setViewState = useSettings((s) => s.setViewState)
+    const viewState = useSettings((s) => s.viewState);
+    const setViewState = useSettings((s) => s.setViewState);
     const handleMoveEnd: React.ComponentProps<typeof CoreMap>["onMoveEnd"] = (
         event
     ) => {
-        setViewState(event.viewState)
-    }
+        setViewState(event.viewState);
+    };
 
     // eslint-disable-next-line
     const handleLoad = (e: any) => {
-        setIsMapReady(true)
+        setIsMapReady(true);
 
-        const map = e.target
+        const map = e.target;
 
         map.flyTo({
             center: [viewState.longitude, viewState.latitude],
@@ -103,15 +117,16 @@ export default function MainMap() {
             essential: true,
             speed: 3,
             curve: 1.5,
-        })
-    }
+        });
+    };
 
-    const unit = useSettings((s) => s.unit)
+    const unit = useSettings((s) => s.unit);
 
     const layers = [
-        ...useVesselLayers(vesselData),
-        ...usePortLayer(portData)
-    ]
+        ...usePortLayer(portData),
+        // ...useBasestationLayer(basestationData), // Experimental, needs more work (or better data, idk)
+        ...useVesselLayers(vesselData, hoveredVessel, setHoveredVessel),
+    ];
 
     return (
         <div className="h-full min-h-0 w-full">
@@ -127,6 +142,10 @@ export default function MainMap() {
                 onMoveEnd={handleMoveEnd}
                 onLoad={handleLoad}
                 layers={layers}
+                deckProps={{
+                    getCursor: ({ isHovering }: { isHovering: boolean }) =>
+                        isHovering ? "pointer" : "grab",
+                }}
             >
                 <MapGLStyleSwitcher
                     styles={mapStyles}
@@ -136,7 +155,9 @@ export default function MainMap() {
                     showImages={true}
                     position="top-left"
                     onBeforeStyleChange={(from, to) => {
-                        console.log(`Switching from ${from.name} to ${to.name}`)
+                        console.log(
+                            `Switching from ${from.name} to ${to.name}`
+                        );
                     }}
                     onStyleChange={handleStyleChange}
                 />
@@ -166,5 +187,5 @@ export default function MainMap() {
                 />
             </CoreMap>
         </div>
-    )
+    );
 }
