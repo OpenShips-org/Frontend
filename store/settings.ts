@@ -1,30 +1,30 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type Settings = {
-    mapStyle: string
-    setMapStyle: (style: string) => void
+    mapStyle: string;
+    setMapStyle: (style: string) => void;
 
-    unit: "metric" | "imperial" | "nautical"
-    setUnit: (unit: "metric" | "imperial" | "nautical") => void
+    unit: "metric" | "imperial" | "nautical";
+    setUnit: (unit: "metric" | "imperial" | "nautical") => void;
 
-    viewState: ViewState
-    setViewState: (v: Partial<ViewState>) => void
+    viewState: ViewState;
+    setViewState: (v: Partial<ViewState>) => void;
 
-    showVesselNames: boolean
-    setShowVesselNames: (show: boolean) => void
-}
+    showVesselNames: boolean;
+    setShowVesselNames: (show: boolean) => void;
+};
 
 type ViewState = {
-    longitude: number
-    latitude: number
-    zoom: number
-}
+    longitude: number;
+    latitude: number;
+    zoom: number;
+};
 
 export const useSettings = create<Settings>()(
     persist(
         (set, get) => ({
-            mapStyle: "/map/styles/versatiles-colorful.json",
+            mapStyle: "/map/styles/versatiles_colorful.json",
             setMapStyle: (style: string) =>
                 set({
                     mapStyle: style,
@@ -59,4 +59,4 @@ export const useSettings = create<Settings>()(
             name: "settings",
         }
     )
-)
+);

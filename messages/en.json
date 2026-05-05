@@ -1,4 +1,9 @@
 {
+  "Main": {
+    "description": "OpenShips is a free and open-source Vessel Tracking Platform as an alternative to platforms like MarineTraffic or VesselFinder. It provides real-time tracking of ships, allowing users to monitor vessel movements and access detailed information about each ship.",
+    "opengraph_title": "OpenShips",
+    "opengraph_description": "OpenShips is a free and open-source Vessel Tracking Platform as an alternative to platforms like MarineTraffic or VesselFinder. It provides real-time tracking of ships, allowing users to monitor vessel movements and access detailed information about each ship."
+  },
   "MapPage": {
     "window_title": "OpenShips - Map"
   },
@@ -18,6 +23,6 @@
   },
   "VesselDetailsPage": {
     "window_title": "Vessel {name} ({mmsi}) Details",
-    "vessel_not_found": "Vessel not found"
+    "vessel_not_found": "Vessel not found."
   }
 }

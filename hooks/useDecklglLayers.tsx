@@ -1,5 +1,5 @@
-import { useMemo } from "react"
-import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers"
+import { useMemo } from "react";
+import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 import { VesselPositionWithType, BaseStationPosition } from "@/types/aisTypes";
 import { GenerateVesselIcon } from "@/components/svgs/vesselIcon";
 import { svgToDataUrl } from "@/lib/iconUtils";
@@ -40,14 +40,17 @@ export function useVesselLayers(
             hoveredVessel.longitude != null &&
             hoveredVessel.latitude != null
                 ? [hoveredVessel]
-                : []
+                : [];
 
         const layers: Layer[] = [
             new ScatterplotLayer({
                 id: "hovered-vessel-highlight",
                 data: hoveredVesselData,
                 pickable: false,
-                getPosition: (d) => [d.longitude as number, d.latitude as number],
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
                 getRadius: 20,
                 radiusUnits: "pixels",
                 getLineColor: [0, 140, 255, 180],
@@ -78,7 +81,7 @@ export function useVesselLayers(
                     getIcon: vessels,
                 },
                 onHover(pickingInfo) {
-                    setHoveredVessel(pickingInfo.object ?? null)
+                    setHoveredVessel(pickingInfo.object ?? null);
                 },
                 onClick(pickingInfo) {
                     if (pickingInfo.object) {
@@ -88,7 +91,7 @@ export function useVesselLayers(
                         }
                     }
                 },
-            }),  
+            }),
             new TextLayer({
                 id: "vessel-labels",
                 data: visibleVessels,
@@ -179,7 +182,9 @@ export function usePortLayer(ports: PortPosition[] | null) {
     }, [ports]);
 }
 
-export function useBasestationLayer(basestations: BaseStationPosition[] | null) {
+export function useBasestationLayer(
+    basestations: BaseStationPosition[] | null
+) {
     return useMemo(() => {
         if (!basestations) return [];
 
@@ -197,7 +202,9 @@ export function useBasestationLayer(basestations: BaseStationPosition[] | null) 
                     d.latitude as number,
                 ],
                 getIcon: (d) => ({
-                    url: svgToDataUrl(GenerateAisBasestationIcon(d.longRangeEnabled ?? false)),
+                    url: svgToDataUrl(
+                        GenerateAisBasestationIcon(d.longRangeEnabled ?? false)
+                    ),
                     width: 400,
                     height: 400,
                 }),

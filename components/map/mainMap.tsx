@@ -4,8 +4,16 @@ import { useRef, useEffect, useState } from "react";
 import { MapGLStyleSwitcher } from "map-gl-style-switcher/react-map-gl";
 import CoreMap, { type CoreMapRef } from "./coreMap";
 import { ScaleControl, NavigationControl } from "react-map-gl/maplibre";
-import { useVesselData, usePortData, useBasestationData } from "@/hooks/useMapData";
-import { useVesselLayers, usePortLayer, useBasestationLayer } from "@/hooks/useDecklglLayers";
+import {
+    useVesselData,
+    usePortData,
+    useBasestationData,
+} from "@/hooks/useMapData";
+import {
+    useVesselLayers,
+    usePortLayer,
+    useBasestationLayer,
+} from "@/hooks/useDecklglLayers";
 import { mapStyles } from "@/lib/mapStyles";
 import { useSettings } from "@/store/settings";
 import debounce from "lodash/debounce";
@@ -145,6 +153,7 @@ export default function MainMap() {
                 deckProps={{
                     getCursor: ({ isHovering }: { isHovering: boolean }) =>
                         isHovering ? "pointer" : "grab",
+                    pickingRadius: 10,
                 }}
             >
                 <MapGLStyleSwitcher

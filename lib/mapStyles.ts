@@ -1,10 +1,10 @@
-import { StyleItem } from "map-gl-style-switcher/react-map-gl"
+import { StyleItem } from "map-gl-style-switcher/react-map-gl";
 
 export const mapStyles: StyleItem[] = [
     {
         id: "versatiles_colorful",
         name: "Colorful",
-        styleUrl: "/map/styles/versatiles-colorful.json",
+        styleUrl: "/map/styles/versatiles_colorful.json",
         image: "https://raw.githubusercontent.com/muimsd/map-gl-style-switcher/refs/heads/main/public/voyager.png",
     },
     {
@@ -24,5 +24,5 @@ export const mapStyles: StyleItem[] = [
         name: "Satellite (Experimental)",
         styleUrl: "/map/styles/versatiles_satellite.json",
         image: "https://raw.githubusercontent.com/muimsd/map-gl-style-switcher/refs/heads/main/public/voyager.png",
-    }
-]
+    },
+];

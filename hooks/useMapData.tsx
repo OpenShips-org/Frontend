@@ -1,5 +1,5 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { apiBaseUrl, vesselLimit } from "@/lib/config"
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { apiBaseUrl, vesselLimit } from "@/lib/config";
 
 export function useVesselData(
     enabled: boolean,
@@ -16,23 +16,23 @@ export function useVesselData(
             aisTypes,
         ],
         queryFn: async () => {
-            const params = new URLSearchParams()
+            const params = new URLSearchParams();
 
-            params.set("minLat", bounds.minLat.toString())
-            params.set("maxLat", bounds.maxLat.toString())
-            params.set("minLon", bounds.minLng.toString())
-            params.set("maxLon", bounds.maxLng.toString())
-            params.set("limit", vesselLimit.toString())
+            params.set("minLat", bounds.minLat.toString());
+            params.set("maxLat", bounds.maxLat.toString());
+            params.set("minLon", bounds.minLng.toString());
+            params.set("maxLon", bounds.maxLng.toString());
+            params.set("limit", vesselLimit.toString());
 
-            aisTypes.forEach((t) => params.append("filterAisTypes", String(t)))
+            aisTypes.forEach((t) => params.append("filterAisTypes", String(t)));
 
             const res = await fetch(
                 `${apiBaseUrl}/external/vessels/position/box?${params}`
-            )
+            );
 
-            if (!res.ok) throw new Error("Failed to fetch map data")
+            if (!res.ok) throw new Error("Failed to fetch map data");
 
-            return res.json()
+            return res.json();
         },
         enabled:
             enabled &&
@@ -44,10 +44,14 @@ export function useVesselData(
         refetchInterval: 1000 * 30,
         refetchOnWindowFocus: true,
         placeholderData: keepPreviousData,
-    })
+    });
 }
 
-export function usePortData(enabled: boolean, bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }, zoom: number) {
+export function usePortData(
+    enabled: boolean,
+    bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number },
+    zoom: number
+) {
     return useQuery({
         queryKey: [
             "portData",
@@ -58,20 +62,20 @@ export function usePortData(enabled: boolean, bounds: { minLat: number; maxLat: 
             zoom,
         ],
         queryFn: async () => {
-            const params = new URLSearchParams()
+            const params = new URLSearchParams();
 
-            params.set("minLat", bounds.minLat.toString())
-            params.set("maxLat", bounds.maxLat.toString())
-            params.set("minLon", bounds.minLng.toString())
-            params.set("maxLon", bounds.maxLng.toString())
+            params.set("minLat", bounds.minLat.toString());
+            params.set("maxLat", bounds.maxLat.toString());
+            params.set("minLon", bounds.minLng.toString());
+            params.set("maxLon", bounds.maxLng.toString());
 
             const res = await fetch(
                 `${apiBaseUrl}/external/ports/box?${params}`
-            )
+            );
 
-            if (!res.ok) throw new Error("Failed to fetch port data")
+            if (!res.ok) throw new Error("Failed to fetch port data");
 
-            return res.json()
+            return res.json();
         },
         enabled:
             enabled &&
@@ -83,10 +87,14 @@ export function usePortData(enabled: boolean, bounds: { minLat: number; maxLat: 
         staleTime: 60_000,
         refetchOnWindowFocus: false,
         placeholderData: zoom >= 8 ? keepPreviousData : undefined,
-    })
+    });
 }
 
-export function useBasestationData(enabled: boolean, bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }, zoom: number) {
+export function useBasestationData(
+    enabled: boolean,
+    bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number },
+    zoom: number
+) {
     return useQuery({
         queryKey: [
             "basestationData",
@@ -97,20 +105,20 @@ export function useBasestationData(enabled: boolean, bounds: { minLat: number; m
             zoom,
         ],
         queryFn: async () => {
-            const params = new URLSearchParams()
+            const params = new URLSearchParams();
 
-            params.set("minLat", bounds.minLat.toString())
-            params.set("maxLat", bounds.maxLat.toString())
-            params.set("minLon", bounds.minLng.toString())
-            params.set("maxLon", bounds.maxLng.toString())
+            params.set("minLat", bounds.minLat.toString());
+            params.set("maxLat", bounds.maxLat.toString());
+            params.set("minLon", bounds.minLng.toString());
+            params.set("maxLon", bounds.maxLng.toString());
 
             const res = await fetch(
                 `${apiBaseUrl}/external/base-stations/box?${params}`
-            )
+            );
 
-            if (!res.ok) throw new Error("Failed to fetch basestation data")
+            if (!res.ok) throw new Error("Failed to fetch basestation data");
 
-            return res.json()
+            return res.json();
         },
         enabled:
             enabled &&
@@ -122,5 +130,5 @@ export function useBasestationData(enabled: boolean, bounds: { minLat: number; m
         staleTime: 1000 * 60,
         refetchOnWindowFocus: false,
         placeholderData: zoom >= 8 ? keepPreviousData : undefined,
-    })
+    });
 }

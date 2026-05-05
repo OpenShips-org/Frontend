@@ -1,8 +1,7 @@
-import { getColorForVesselType } from "@/lib/iconUtils"
+import { getColorForVesselType } from "@/lib/iconUtils";
 
 export function GenerateVesselIcon(type: string) {
-
-    const color = getColorForVesselType(parseInt(type))
+    const color = getColorForVesselType(parseInt(type));
 
     return `\
         <svg viewBox="0 0 447.342 447.342" xmlns="http://www.w3.org/2000/svg" fill="${color}" stroke="#000" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">\
