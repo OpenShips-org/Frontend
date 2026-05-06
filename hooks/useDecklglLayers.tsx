@@ -72,8 +72,10 @@ export function useVesselLayers(
                     height: 400,
                 }),
                 getAngle: (d) => {
-                    if (d.heading == 511) return 0; // invalid heading, default to 0
-                    return d.heading - 225;
+                    if (d.heading == 511 || d.heading == null) return 0;
+
+                    // I have no idea why but this seems to work
+                    return (0 - d.heading + 360) % 360;
                 },
                 getSize: 30,
 
