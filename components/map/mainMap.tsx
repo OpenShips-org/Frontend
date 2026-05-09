@@ -18,6 +18,8 @@ import { mapStyles } from "@/lib/mapStyles";
 import { useSettings } from "@/store/settings";
 import debounce from "lodash/debounce";
 import type { VesselPositionWithType } from "@/types/aisTypes";
+import { PickingInfo } from "@deck.gl/core";
+import { formatTimeAgo } from "@/lib/timeUtils";
 
 const tooltipStyle: React.CSSProperties = {
     position: "absolute",
@@ -43,7 +45,7 @@ export default function MainMap() {
     const [zoom, setZoom] = useState(0);
 
     const [hoveredVessel, setHoveredVessel] =
-        useState<VesselPositionWithType | null>(null);
+        useState<PickingInfo<VesselPositionWithType> | null>(null);
 
     useEffect(() => {
         if (!isMapReady || !mapRef.current) return;
@@ -169,8 +171,27 @@ export default function MainMap() {
                     pickingRadius: 10,
                 }}
             >
-
-                {}
+                {hoveredVessel?.object && (
+                    <div
+                        style={{
+                            left: hoveredVessel.x + 20,
+                            top: hoveredVessel.y,
+                        }}
+                        className="pointer-events-none absolute z-10 rounded bg-white p-1.5 text-xs text-black dark:bg-gray-800 dark:text-white"
+                    >
+                        <div>
+                            <strong>{hoveredVessel.object.vesselName}</strong>
+                        </div>
+                        <div>MMSI: {hoveredVessel.object.mmsi}</div>
+                        <div>
+                            {hoveredVessel.object.timestamp
+                                ? formatTimeAgo(
+                                      new Date(hoveredVessel.object.timestamp)
+                                  )
+                                : "No timestamp :("}
+                        </div>
+                    </div>
+                )}
 
                 <MapGLStyleSwitcher
                     styles={mapStyles}

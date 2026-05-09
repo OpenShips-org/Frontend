@@ -7,6 +7,7 @@ import { PortPosition } from "@/types/portTypes";
 import { GeneratePortIcon } from "@/components/svgs/portIcon";
 import { Layer } from "@deck.gl/core";
 import { GenerateAisBasestationIcon } from "@/components/svgs/aisBasestations";
+import { PickingInfo } from "@deck.gl/core";
 
 const vesselIconCache = new Map<number, string>();
 
@@ -25,8 +26,8 @@ function getCachedVesselIcon(aisType: number) {
 
 export function useVesselLayers(
     vessels: VesselPositionWithType[] | null,
-    hoveredVessel: VesselPositionWithType | null,
-    setHoveredVessel: (vessel: VesselPositionWithType | null) => void
+    hoveredVessel: PickingInfo<VesselPositionWithType> | null,
+    setHoveredVessel: (vessel: PickingInfo<VesselPositionWithType> | null) => void
 ) {
     return useMemo(() => {
         if (!vessels) return [];
@@ -36,10 +37,10 @@ export function useVesselLayers(
         );
 
         const hoveredVesselData =
-            hoveredVessel &&
-            hoveredVessel.longitude != null &&
-            hoveredVessel.latitude != null
-                ? [hoveredVessel]
+            hoveredVessel?.object &&
+            hoveredVessel.object.longitude != null &&
+            hoveredVessel.object.latitude != null
+                ? [hoveredVessel.object]
                 : [];
 
         const layers: Layer[] = [
@@ -82,10 +83,8 @@ export function useVesselLayers(
                 updateTriggers: {
                     getIcon: vessels,
                 },
-                onHover(pickingInfo) {
-                    setHoveredVessel(pickingInfo.object ?? null);
-                },
-                onClick(pickingInfo) {
+                onHover: (info) => setHoveredVessel(info),
+                onClick(pickingInfo: PickingInfo<VesselPositionWithType>) {
                     if (pickingInfo.object) {
                         const mmsi = pickingInfo.object.mmsi;
                         if (mmsi) {
