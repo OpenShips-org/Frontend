@@ -19,6 +19,17 @@ import { useSettings } from "@/store/settings";
 import debounce from "lodash/debounce";
 import type { VesselPositionWithType } from "@/types/aisTypes";
 
+const tooltipStyle: React.CSSProperties = {
+    position: "absolute",
+    pointerEvents: "none",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    color: "#fff",
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "12px",
+    zIndex: 1000,
+};
+
 export default function MainMap() {
     const mapRef = useRef<CoreMapRef | null>(null);
     const [isMapReady, setIsMapReady] = useState(false);
@@ -83,6 +94,7 @@ export default function MainMap() {
         zoom
     );
 
+    /* 
     const { data: basestationData } = useBasestationData(
         isMapReady && !!bounds,
         bounds ?? {
@@ -93,6 +105,7 @@ export default function MainMap() {
         },
         zoom
     );
+    */
 
     const mapStyle = useSettings((state) => state.mapStyle);
     const setMapStyle = useSettings((state) => state.setMapStyle);
@@ -156,6 +169,9 @@ export default function MainMap() {
                     pickingRadius: 10,
                 }}
             >
+
+                {}
+
                 <MapGLStyleSwitcher
                     styles={mapStyles}
                     activeStyleId={activeStyleId}

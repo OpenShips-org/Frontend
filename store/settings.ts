@@ -39,7 +39,7 @@ export const useSettings = create<Settings>()(
             viewState: {
                 longitude: 0,
                 latitude: 0,
-                zoom: 1,
+                zoom: 3,
             },
             setViewState: (v) =>
                 set({

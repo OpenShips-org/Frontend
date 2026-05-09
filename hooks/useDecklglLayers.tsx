@@ -62,16 +62,16 @@ export function useVesselLayers(
                 id: "vessels",
                 data: visibleVessels,
                 pickable: true,
-                getPosition: (d) => [
+                getPosition: (d: VesselPositionWithType) => [
                     d.longitude as number,
                     d.latitude as number,
                 ],
-                getIcon: (d) => ({
+                getIcon: (d: VesselPositionWithType) => ({
                     url: getCachedVesselIcon(d.aisType ?? 0),
                     width: 400,
                     height: 400,
                 }),
-                getAngle: (d) => {
+                getAngle: (d: VesselPositionWithType) => {
                     if (d.heading == 511 || d.heading == null) return 0;
 
                     // I have no idea why but this seems to work
@@ -93,16 +93,36 @@ export function useVesselLayers(
                         }
                     }
                 },
+                getColor: (d: VesselPositionWithType) => {   
+                    if (d.timestamp) {
+                        const ageInSeconds =
+                            (Date.now() - new Date(d.timestamp).getTime()) /
+                            1000;
+                        if (ageInSeconds < 60) {
+                            return [0, 0, 0, 255];
+                        } else if (ageInSeconds < 120) {
+                            return [0, 0, 0, 200];
+                        } else if (ageInSeconds < 300) {
+                            return [0, 0, 0, 150];
+                        } else if (ageInSeconds < 600) {
+                            return [0, 0, 0, 100];
+                        } else {
+                            return [0, 0, 0, 50];
+                        }
+                    }
+
+                    return [0, 0, 0, 255];
+                },
             }),
             new TextLayer({
                 id: "vessel-labels",
                 data: visibleVessels,
                 pickable: false,
-                getPosition: (d) => [
+                getPosition: (d: VesselPositionWithType) => [
                     d.longitude as number,
                     d.latitude as number,
                 ],
-                getText: (d) => d.vesselName || "",
+                getText: (d: VesselPositionWithType) => d.vesselName || "",
                 getSize: 12,
                 getColor: [0, 0, 0],
                 getAngle: () => 0,
@@ -117,7 +137,7 @@ export function useVesselLayers(
                     id: "vessel-timestamps",
                     data: visibleVessels,
                     pickable: false,
-                    getPosition: (d) => [
+                    getPosition: (d: VesselPositionWithType) => [
                         d.longitude as number,
                         d.latitude as number,
                     ],

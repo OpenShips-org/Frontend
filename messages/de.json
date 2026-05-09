@@ -24,5 +24,10 @@
   "VesselDetailsPage": {
     "window_title": "Details zu Schiff {name} ({mmsi})",
     "vessel_not_found": "Schiff nicht gefunden."
+  },
+  "Popup_FirstVisit": {
+    "title": "Willkommen bei OpenShips!",
+    "message": "Danke für Ihren Besuch! Bitte beachten Sie, dass die auf dieser Plattform angezeigten Daten aus dem AIS (Automatic Identification System) stammen und möglicherweise nicht 100% genau oder aktuell sind. Verifizieren Sie Informationen immer mit offiziellen Quellen, wenn dies erforderlich ist.",
+    "ok_button": "Okay!"
   }
 }
