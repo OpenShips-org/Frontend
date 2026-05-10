@@ -4,7 +4,7 @@ import { apiBaseUrl, vesselLimit } from "@/lib/config";
 export function useVesselData(
     enabled: boolean,
     bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number },
-    aisTypes: number[]
+    vesselTypes: number[]
 ) {
     return useQuery({
         queryKey: [
@@ -13,7 +13,7 @@ export function useVesselData(
             bounds.maxLat.toFixed(4),
             bounds.minLng.toFixed(4),
             bounds.maxLng.toFixed(4),
-            aisTypes,
+            vesselTypes,
         ],
         queryFn: async () => {
             const params = new URLSearchParams();
@@ -24,7 +24,7 @@ export function useVesselData(
             params.set("maxLon", bounds.maxLng.toString());
             params.set("limit", vesselLimit.toString());
 
-            aisTypes.forEach((t) => params.append("filterAisTypes", String(t)));
+            vesselTypes.forEach((t) => params.append("filterAisTypes", String(t)));
 
             const res = await fetch(
                 `${apiBaseUrl}/external/vessels/position/box?${params}`

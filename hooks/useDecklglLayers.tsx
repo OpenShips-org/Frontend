@@ -13,13 +13,13 @@ const vesselIconCache = new Map<number, string>();
 
 const showVesselTimstamps = false;
 
-function getCachedVesselIcon(aisType: number) {
-    const cachedIcon = vesselIconCache.get(aisType);
+function getCachedVesselIcon(vesselType: number) {
+    const cachedIcon = vesselIconCache.get(vesselType);
 
     if (cachedIcon) return cachedIcon;
 
-    const generatedIcon = svgToDataUrl(GenerateVesselIcon(String(aisType)));
-    vesselIconCache.set(aisType, generatedIcon);
+    const generatedIcon = svgToDataUrl(GenerateVesselIcon(String(vesselType)));
+    vesselIconCache.set(vesselType, generatedIcon);
 
     return generatedIcon;
 }
@@ -27,7 +27,9 @@ function getCachedVesselIcon(aisType: number) {
 export function useVesselLayers(
     vessels: VesselPositionWithType[] | null,
     hoveredVessel: PickingInfo<VesselPositionWithType> | null,
-    setHoveredVessel: (vessel: PickingInfo<VesselPositionWithType> | null) => void
+    setHoveredVessel: (vessel: PickingInfo<VesselPositionWithType> | null) => void,
+    selectedVessel: VesselPositionWithType | null,
+    setSelectedVessel: (vessel: VesselPositionWithType | null) => void
 ) {
     return useMemo(() => {
         if (!vessels) return [];
@@ -59,6 +61,22 @@ export function useVesselLayers(
                 stroked: true,
                 filled: false,
             }),
+            new ScatterplotLayer({
+                id: "selected-vessel-highlight",
+                data: selectedVessel ? [selectedVessel] : [],
+                pickable: false,
+                getPosition: (d) => [
+                    d.longitude as number,
+                    d.latitude as number,
+                ],
+                getRadius: 20,
+                radiusUnits: "pixels",
+                getLineColor: [0, 140, 255, 180],
+                lineWidthMinPixels: 2,
+                stroked: true,
+                filled: true,
+                getFillColor: [0, 140, 255, 70],
+            }),
             new IconLayer({
                 id: "vessels",
                 data: visibleVessels,
@@ -68,7 +86,7 @@ export function useVesselLayers(
                     d.latitude as number,
                 ],
                 getIcon: (d: VesselPositionWithType) => ({
-                    url: getCachedVesselIcon(d.aisType ?? 0),
+                    url: getCachedVesselIcon(d.vesselType ?? 0),
                     width: 400,
                     height: 400,
                 }),
@@ -85,12 +103,7 @@ export function useVesselLayers(
                 },
                 onHover: (info) => setHoveredVessel(info),
                 onClick(pickingInfo: PickingInfo<VesselPositionWithType>) {
-                    if (pickingInfo.object) {
-                        const mmsi = pickingInfo.object.mmsi;
-                        if (mmsi) {
-                            window.open(`/vessels/${mmsi}`, "_blank");
-                        }
-                    }
+                    setSelectedVessel(pickingInfo.object ?? null);
                 },
                 getColor: (d: VesselPositionWithType) => {   
                     if (d.timestamp) {
@@ -156,7 +169,7 @@ export function useVesselLayers(
         }
 
         return layers;
-    }, [vessels, hoveredVessel, setHoveredVessel]);
+    }, [vessels, hoveredVessel, setHoveredVessel, selectedVessel, setSelectedVessel]);
 }
 
 export function usePortLayer(ports: PortPosition[] | null) {

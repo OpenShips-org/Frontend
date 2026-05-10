@@ -7,14 +7,9 @@ import { ScaleControl, NavigationControl } from "react-map-gl/maplibre";
 import {
     useVesselData,
     usePortData,
-    useBasestationData,
     useTrackedVesselData,
 } from "@/hooks/useMapData";
-import {
-    useVesselLayers,
-    usePortLayer,
-    useBasestationLayer,
-} from "@/hooks/useDecklglLayers";
+import { useVesselLayers, usePortLayer } from "@/hooks/useDecklglLayers";
 import { mapStyles } from "@/lib/mapStyles";
 import { useSettings } from "@/store/settings";
 import debounce from "lodash/debounce";
@@ -22,6 +17,7 @@ import type { VesselPositionWithType } from "@/types/aisTypes";
 import { PickingInfo } from "@deck.gl/core";
 import { formatTimeAgo } from "@/lib/timeUtils";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const tooltipStyle: React.CSSProperties = {
     position: "absolute",
@@ -35,6 +31,8 @@ const tooltipStyle: React.CSSProperties = {
 };
 
 export default function MainMap() {
+    const router = useRouter();
+
     const mapRef = useRef<CoreMapRef | null>(null);
     const [isMapReady, setIsMapReady] = useState(false);
 
@@ -48,6 +46,9 @@ export default function MainMap() {
 
     const [hoveredVessel, setHoveredVessel] =
         useState<PickingInfo<VesselPositionWithType> | null>(null);
+
+    const [selectedVessel, setSelectedVessel] =
+        useState<VesselPositionWithType | null>(null);
 
     useEffect(() => {
         if (!isMapReady || !mapRef.current) return;
@@ -136,8 +137,24 @@ export default function MainMap() {
                 trackedVesselData.longitude,
                 trackedVesselData.latitude,
             ]);
+
+            setSelectedVessel(trackedVesselData);
         }
     }, [trackedVesselData]);
+
+    useEffect(() => {
+        if (!isMapReady || !mapRef.current || !trackedVesselData) return;
+
+        const map = mapRef.current;
+        
+        map.flyTo({
+            center: [trackedVesselData.longitude, trackedVesselData.latitude],
+            zoom: 15,
+            essential: true,
+            speed: 3,
+            curve: 1.5,
+        });
+    }, [isMapReady, trackedVesselData]);
 
     const storedviewState = useSettings((s) => s.viewState);
     const setViewState = useSettings((s) => s.setViewState);
@@ -151,7 +168,7 @@ export default function MainMap() {
         ? {
               longitude: coordinatesForMMSI[0],
               latitude: coordinatesForMMSI[1],
-              zoom: 12,
+              zoom: 15,
           }
         : storedviewState;
 
@@ -160,7 +177,7 @@ export default function MainMap() {
             setViewState({
                 longitude: coordinatesForMMSI[0],
                 latitude: coordinatesForMMSI[1],
-                zoom: 12,
+                zoom: 15,
             });
         }
     }, [trackedVesselMMSI]);
@@ -180,12 +197,27 @@ export default function MainMap() {
         });
     };
 
+    const handleClick = (e: any) => {
+        if (hoveredVessel?.object) {
+            setSelectedVessel(hoveredVessel.object);
+        } else {
+            setSelectedVessel(null);
+            router.push(`/`);
+        }
+    };
+
     const unit = useSettings((s) => s.unit);
 
     const layers = [
         ...usePortLayer(portData),
         // ...useBasestationLayer(basestationData), // Experimental, needs more work (or better data, idk)
-        ...useVesselLayers(vesselData, hoveredVessel, setHoveredVessel),
+        ...useVesselLayers(
+            vesselData,
+            hoveredVessel,
+            setHoveredVessel,
+            selectedVessel,
+            setSelectedVessel
+        ),
     ];
 
     return (
@@ -201,6 +233,7 @@ export default function MainMap() {
                 }}
                 onMoveEnd={handleMoveEnd}
                 onLoad={handleLoad}
+                onClick={handleClick}
                 layers={layers}
                 deckProps={{
                     getCursor: ({ isHovering }: { isHovering: boolean }) =>

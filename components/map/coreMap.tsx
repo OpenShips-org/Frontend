@@ -26,6 +26,7 @@ export type CoreMapConfig = {
     onMove?: React.ComponentProps<typeof Map>["onMove"];
     onMoveEnd?: React.ComponentProps<typeof Map>["onMoveEnd"];
     onLoad?: React.ComponentProps<typeof Map>["onLoad"];
+    onClick?: React.ComponentProps<typeof Map>["onClick"];
 };
 
 export type CoreMapRef = MapRef;
@@ -42,6 +43,7 @@ const CoreMap = forwardRef<CoreMapRef, CoreMapConfig>(
             onMove,
             onMoveEnd,
             onLoad,
+            onClick,
         } = config;
 
         const memorizedLayers = useMemo(() => layers, [layers]);
@@ -80,6 +82,7 @@ const CoreMap = forwardRef<CoreMapRef, CoreMapConfig>(
                 onMove={onMove}
                 onMoveEnd={onMoveEnd}
                 onLoad={onLoad}
+                onClick={onClick}
             >
                 <DeckGLOverlay
                     layers={memorizedLayers}
