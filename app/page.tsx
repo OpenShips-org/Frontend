@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+    icons: "https://openships.de/icons/openships_icon.svg",
     title: "OpenShips",
     description:
         "OpenShips is a free and open-source Vessel Tracking Platform as an alternative to platforms like MarineTraffic or VesselFinder. It provides real-time tracking of ships, allowing users to monitor vessel movements and access detailed information about each ship.",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "/icons/openships_icon.png",
+                url: "https://openships.de/icons/openships_icon.png",
                 width: 500,
                 height: 500,
                 alt: "OpenShips Logo",

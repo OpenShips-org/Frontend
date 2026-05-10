@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         title: t("window_title"),
         description: main("description"),
-        icons: "/icons/openships_icon.svg",
+        icons: "https://openships.de/icons/openships_icon.svg",
 
         openGraph: {
             type: "website",
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
             description: main("opengraph_description"),
             images: [
                 {
-                    url: "/icons/openships_icon.png",
+                    url: "https://openships.de/icons/openships_icon.png",
                     width: 500,
                     height: 500,
                     alt: "OpenShips Logo",
