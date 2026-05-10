@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, use } from "react";
 import { MapGLStyleSwitcher } from "map-gl-style-switcher/react-map-gl";
 import CoreMap, { type CoreMapRef } from "./coreMap";
 import { ScaleControl, NavigationControl } from "react-map-gl/maplibre";
@@ -8,6 +8,7 @@ import {
     useVesselData,
     usePortData,
     useBasestationData,
+    useTrackedVesselData,
 } from "@/hooks/useMapData";
 import {
     useVesselLayers,
@@ -20,6 +21,7 @@ import debounce from "lodash/debounce";
 import type { VesselPositionWithType } from "@/types/aisTypes";
 import { PickingInfo } from "@deck.gl/core";
 import { formatTimeAgo } from "@/lib/timeUtils";
+import { useSearchParams } from "next/navigation";
 
 const tooltipStyle: React.CSSProperties = {
     position: "absolute",
@@ -120,13 +122,48 @@ export default function MainMap() {
         setMapStyle(styleUrl);
     };
 
-    const viewState = useSettings((s) => s.viewState);
+    const trackedVesselMMSI = useSearchParams().get("mmsi");
+    let [coordinatesForMMSI, setCoordinatesForMMSI] = useState<
+        [number, number] | null
+    >(null);
+    const { data: trackedVesselData } = useTrackedVesselData(
+        trackedVesselMMSI ? Number(trackedVesselMMSI) : null
+    );
+
+    useEffect(() => {
+        if (trackedVesselData) {
+            setCoordinatesForMMSI([
+                trackedVesselData.longitude,
+                trackedVesselData.latitude,
+            ]);
+        }
+    }, [trackedVesselData]);
+
+    const storedviewState = useSettings((s) => s.viewState);
     const setViewState = useSettings((s) => s.setViewState);
     const handleMoveEnd: React.ComponentProps<typeof CoreMap>["onMoveEnd"] = (
         event
     ) => {
         setViewState(event.viewState);
     };
+
+    const viewState = coordinatesForMMSI
+        ? {
+              longitude: coordinatesForMMSI[0],
+              latitude: coordinatesForMMSI[1],
+              zoom: 12,
+          }
+        : storedviewState;
+
+    useEffect(() => {
+        if (coordinatesForMMSI) {
+            setViewState({
+                longitude: coordinatesForMMSI[0],
+                latitude: coordinatesForMMSI[1],
+                zoom: 12,
+            });
+        }
+    }, [trackedVesselMMSI]);
 
     // eslint-disable-next-line
     const handleLoad = (e: any) => {

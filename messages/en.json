@@ -23,7 +23,7 @@
   },
   "VesselDetailsPage": {
     "window_title": "Vessel {name} ({mmsi}) Details",
-    "vessel_not_found": "Vessel not found."
+    "vessel_not_found": "Vessel {mmsi} not found."
   },
   "Popup_FirstVisit": {
     "title": "Welcome to OpenShips!",

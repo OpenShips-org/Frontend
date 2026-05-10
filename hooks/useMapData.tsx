@@ -47,6 +47,27 @@ export function useVesselData(
     });
 }
 
+export function useTrackedVesselData(mmsi: number | null) {
+    return useQuery({
+        queryKey: ["trackedVesselData", mmsi],
+        queryFn: async () => {
+            if (mmsi == null) return null;
+
+            const res = await fetch(
+                `${apiBaseUrl}/external/vessels/position/${mmsi}`
+            );
+
+            if (!res.ok) throw new Error("Failed to fetch tracked vessel data");
+
+            return res.json();
+        },
+        enabled: mmsi != null,
+        staleTime: 1000 * 30,
+        refetchInterval: 1000 * 30,
+        refetchOnWindowFocus: true,
+    });
+}
+
 export function usePortData(
     enabled: boolean,
     bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number },
