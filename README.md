@@ -1,5 +1,8 @@
 # OpenShips frontend (Docker)
 
+## What is OpenShips?
+OpenShips is a project that serves as an open source alternative to AIS-tracking platforms like [VesselFinder](https://www.vesselfinder.com) and [MarineTraffic](https://www.marinetraffic.com). It provides real-time tracking of ships around the world, allowing users to monitor maritime traffic and access information about vessels, their locations, and movements.
+
 ## Building and running the image
 
 ```bash

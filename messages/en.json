@@ -15,11 +15,13 @@
   },
   "VesselPage": {
     "window_title": "OpenShips - Vessels",
-    "title": "Vessels"
+    "title": "VESSEL DATABASE",
+    "description": "Explore and search for vessels in the OpenShips database."
   },
   "PortsPage": {
     "window_title": "OpenShips - Ports",
-    "title": "Ports"
+    "title": "PORT DATABASE",
+    "description": "Explore and search for ports in the OpenShips database."
   },
   "VesselDetailsPage": {
     "window_title": "Vessel {name} ({mmsi}) Details",

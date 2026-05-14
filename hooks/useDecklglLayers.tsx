@@ -27,7 +27,9 @@ function getCachedVesselIcon(vesselType: number) {
 export function useVesselLayers(
     vessels: VesselPositionWithType[] | null,
     hoveredVessel: PickingInfo<VesselPositionWithType> | null,
-    setHoveredVessel: (vessel: PickingInfo<VesselPositionWithType> | null) => void,
+    setHoveredVessel: (
+        vessel: PickingInfo<VesselPositionWithType> | null
+    ) => void,
     selectedVessel: VesselPositionWithType | null,
     setSelectedVessel: (vessel: VesselPositionWithType | null) => void
 ) {
@@ -105,18 +107,18 @@ export function useVesselLayers(
                 onClick(pickingInfo: PickingInfo<VesselPositionWithType>) {
                     setSelectedVessel(pickingInfo.object ?? null);
                 },
-                getColor: (d: VesselPositionWithType) => {   
+                getColor: (d: VesselPositionWithType) => {
                     if (d.timestamp) {
                         const ageInSeconds =
                             (Date.now() - new Date(d.timestamp).getTime()) /
                             1000;
-                        if (ageInSeconds < 60) {
+                        if (ageInSeconds < 300) {
                             return [0, 0, 0, 255];
-                        } else if (ageInSeconds < 120) {
-                            return [0, 0, 0, 200];
-                        } else if (ageInSeconds < 300) {
-                            return [0, 0, 0, 150];
                         } else if (ageInSeconds < 600) {
+                            return [0, 0, 0, 200];
+                        } else if (ageInSeconds < 1200) {
+                            return [0, 0, 0, 150];
+                        } else if (ageInSeconds < 1800) {
                             return [0, 0, 0, 100];
                         } else {
                             return [0, 0, 0, 50];
@@ -169,7 +171,13 @@ export function useVesselLayers(
         }
 
         return layers;
-    }, [vessels, hoveredVessel, setHoveredVessel, selectedVessel, setSelectedVessel]);
+    }, [
+        vessels,
+        hoveredVessel,
+        setHoveredVessel,
+        selectedVessel,
+        setSelectedVessel,
+    ]);
 }
 
 export function usePortLayer(ports: PortPosition[] | null) {

@@ -58,10 +58,15 @@ export default async function Page({
         return (
             <div className="flex h-screen w-screen flex-col items-center justify-start overflow-hidden">
                 <NavBar />
-                
-                <div className="flex flex-col h-full w-full items-center justify-center">
-                    <Image src={Logo} alt="OpenShips Logo" className="invert dark:invert-0" height={200} />
-                    <h1 className="p-4 text-3xl font-bold mb-40">
+
+                <div className="flex h-full w-full flex-col items-center justify-center">
+                    <Image
+                        src={Logo}
+                        alt="OpenShips Logo"
+                        className="invert dark:invert-0"
+                        height={200}
+                    />
+                    <h1 className="mb-40 p-4 text-3xl font-bold">
                         {t("vessel_not_found", { mmsi })}
                     </h1>
                 </div>

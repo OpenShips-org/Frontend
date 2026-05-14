@@ -24,7 +24,9 @@ export function useVesselData(
             params.set("maxLon", bounds.maxLng.toString());
             params.set("limit", vesselLimit.toString());
 
-            vesselTypes.forEach((t) => params.append("filterAisTypes", String(t)));
+            vesselTypes.forEach((t) =>
+                params.append("filterAisTypes", String(t))
+            );
 
             const res = await fetch(
                 `${apiBaseUrl}/external/vessels/position/box?${params}`

@@ -18,6 +18,8 @@ import { PickingInfo } from "@deck.gl/core";
 import { formatTimeAgo } from "@/lib/timeUtils";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
+import { useTheme } from "next-themes";
 
 const tooltipStyle: React.CSSProperties = {
     position: "absolute",
@@ -31,6 +33,12 @@ const tooltipStyle: React.CSSProperties = {
 };
 
 export default function MainMap() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const router = useRouter();
 
     const mapRef = useRef<CoreMapRef | null>(null);
@@ -146,7 +154,7 @@ export default function MainMap() {
         if (!isMapReady || !mapRef.current || !trackedVesselData) return;
 
         const map = mapRef.current;
-        
+
         map.flyTo({
             center: [trackedVesselData.longitude, trackedVesselData.latitude],
             zoom: 15,
@@ -197,15 +205,19 @@ export default function MainMap() {
         });
     };
 
-    const handleClick = (e: any) => {
-        if (hoveredVessel?.object) {
-            setSelectedVessel(hoveredVessel.object);
-        } else {
-            setSelectedVessel(null);
-            router.push(`/`);
-        }
+    const handleDeckClick = (info: PickingInfo) => {
+        if (info.object) return;
+
+        setSelectedVessel(null);
+        setHoveredVessel(null);
+        router.push(`/`);
     };
 
+    const isTouchDevice = useIsTouchDevice();
+
+    const { resolvedTheme } = useTheme();
+    const switcherTheme =
+        mounted && resolvedTheme === "dark" ? "dark" : "light";
     const unit = useSettings((s) => s.unit);
 
     const layers = [
@@ -213,8 +225,8 @@ export default function MainMap() {
         // ...useBasestationLayer(basestationData), // Experimental, needs more work (or better data, idk)
         ...useVesselLayers(
             vesselData,
-            hoveredVessel,
-            setHoveredVessel,
+            isTouchDevice ? null : hoveredVessel,
+            isTouchDevice ? () => {} : setHoveredVessel,
             selectedVessel,
             setSelectedVessel
         ),
@@ -233,12 +245,12 @@ export default function MainMap() {
                 }}
                 onMoveEnd={handleMoveEnd}
                 onLoad={handleLoad}
-                onClick={handleClick}
                 layers={layers}
                 deckProps={{
                     getCursor: ({ isHovering }: { isHovering: boolean }) =>
                         isHovering ? "pointer" : "grab",
                     pickingRadius: 10,
+                    onClick: handleDeckClick,
                 }}
             >
                 {hoveredVessel?.object && (
@@ -263,20 +275,23 @@ export default function MainMap() {
                     </div>
                 )}
 
-                <MapGLStyleSwitcher
-                    styles={mapStyles}
-                    activeStyleId={activeStyleId}
-                    theme="auto"
-                    showLabels={true}
-                    showImages={true}
-                    position="top-left"
-                    onBeforeStyleChange={(from, to) => {
-                        console.log(
-                            `Switching from ${from.name} to ${to.name}`
-                        );
-                    }}
-                    onStyleChange={handleStyleChange}
-                />
+                {mounted && (
+                    <MapGLStyleSwitcher
+                        key={switcherTheme}
+                        styles={mapStyles}
+                        activeStyleId={activeStyleId}
+                        theme={switcherTheme}
+                        showLabels={true}
+                        showImages={true}
+                        position="top-left"
+                        onBeforeStyleChange={(from, to) => {
+                            console.log(
+                                `Switching from ${from.name} to ${to.name}`
+                            );
+                        }}
+                        onStyleChange={handleStyleChange}
+                    />
+                )}
                 <ScaleControl
                     position="bottom-right"
                     unit={unit}

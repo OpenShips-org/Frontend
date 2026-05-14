@@ -32,7 +32,9 @@ export default function FirstVisit() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t("title")}</DialogTitle>
-                    <DialogDescription className="mt-3">{t("message")}</DialogDescription>
+                    <DialogDescription className="mt-3">
+                        {t("message")}
+                    </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>

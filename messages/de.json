@@ -1,8 +1,8 @@
 {
   "Main": {
-    "description": "OpenShips ist eine kostenlose und Open-Source-Schiffsverfolgungsplattform als Alternative zu Plattformen wie MarineTraffic oder VesselFinder. Sie bietet Echtzeit-Tracking von Schiffen, ermöglicht es Benutzern, die Bewegungen von Schiffen zu überwachen und detaillierte Informationen über jedes Schiff abzurufen.",
+    "description": "OpenShips ist eine kostenlose und Open-Source-Schiffsverfolgungsplattform als Alternative zu Plattformen wie MarineTraffic oder VesselFinder. Sie bietet Echtzeit-Tracking von Schiffen, ermöglicht es Benutzern, die Bewegungen von Schiffen zu überwachen und detaillierte Informationen zu jedem Schiff abzurufen.",
     "opengraph_title": "OpenShips",
-    "opengraph_description": "OpenShips ist eine kostenlose und Open-Source-Schiffsverfolgungsplattform als Alternative zu Plattformen wie MarineTraffic oder VesselFinder. Sie bietet Echtzeit-Tracking von Schiffen, ermöglicht es Benutzern, die Bewegungen von Schiffen zu überwachen und detaillierte Informationen über jedes Schiff abzurufen."
+    "opengraph_description": "OpenShips ist eine kostenlose und Open-Source-Schiffsverfolgungsplattform als Alternative zu Plattformen wie MarineTraffic oder VesselFinder. Sie bietet Echtzeit-Tracking von Schiffen, ermöglicht es Benutzern, die Bewegungen von Schiffen zu überwachen und detaillierte Informationen zu jedem Schiff abzurufen."
   },
   "MapPage": {
     "window_title": "OpenShips - Karte"
@@ -15,19 +15,21 @@
   },
   "VesselPage": {
     "window_title": "OpenShips - Schiffe",
-    "title": "Schiffe"
+    "title": "SCHIFFSDATENBANK",
+    "description": "Erkunde und suche nach Schiffen in der OpenShips-Datenbank."
   },
   "PortsPage": {
     "window_title": "OpenShips - Häfen",
-    "title": "Häfen"
+    "title": "HAFENDATENBANK",
+    "description": "Erkunde und suche nach Häfen in der OpenShips-Datenbank."
   },
   "VesselDetailsPage": {
-    "window_title": "Details zu Schiff {name} ({mmsi})",
-    "vessel_not_found": "Schiff nicht gefunden."
+    "window_title": "Details zum Schiff {name} ({mmsi})",
+    "vessel_not_found": "Schiff {mmsi} nicht gefunden."
   },
   "Popup_FirstVisit": {
     "title": "Willkommen bei OpenShips!",
     "message": "Danke für Ihren Besuch! Bitte beachten Sie, dass die auf dieser Plattform angezeigten Daten aus dem AIS (Automatic Identification System) stammen und möglicherweise nicht 100% genau oder aktuell sind. Verifizieren Sie Informationen immer mit offiziellen Quellen, wenn dies erforderlich ist.",
-    "ok_button": "Okay!"
+    "ok_button": "Verstanden!"
   }
 }
